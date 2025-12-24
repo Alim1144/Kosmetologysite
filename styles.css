@@ -38,13 +38,7 @@ body {
 }
 
 .status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  padding: 10px 16px 4px;
-  color: #0f172a;
-  opacity: 0.9;
+  display: none;
 }
 
 .status-icons {
@@ -54,14 +48,14 @@ body {
 }
 
 main {
-  padding: 12px 18px 22px;
+  padding: 0 18px 22px;
 }
 
 .hero {
   display: grid;
   place-items: center;
   text-align: center;
-  padding-top: 12px;
+  padding-top: 8px;
   position: relative;
 }
 
@@ -503,10 +497,6 @@ main {
   .card {
     border-radius: 0;
     max-width: 100%;
-  }
-
-  .status-bar {
-    padding-inline: 12px;
   }
 
   .top-accent {
