@@ -15,12 +15,13 @@ body {
 .app {
   display: flex;
   justify-content: center;
-  padding: 24px 12px 48px;
+  padding: 0 0 48px;
 }
 
 .card {
   background: #fff;
-  width: min(420px, 100%);
+  width: 100%;
+  max-width: 420px;
   border-radius: 28px;
   box-shadow: 0 16px 60px rgba(23, 51, 90, 0.14);
   overflow: hidden;
@@ -496,11 +497,12 @@ main {
 
 @media (max-width: 480px) {
   .app {
-    padding: 12px 8px 30px;
+    padding: 0 0 30px;
   }
 
   .card {
-    border-radius: 22px;
+    border-radius: 0;
+    max-width: 100%;
   }
 
   .status-bar {
