@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сайт-визитка косметолога-эстетиста</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="status-bar">
+      <div class="status-time" id="statusTime">23:14</div>
+      <div class="status-icons">
+        <span class="status-icon">📶</span>
+        <span class="status-icon">📡</span>
+        <span class="status-icon">🔋</span>
+      </div>
+    </header>
+
+    <main class="card">
+      <div class="top-accent"></div>
+
+      <section class="hero">
+        <button class="ghost-button video-trigger" id="videoTrigger" aria-label="Включить видео-приветствие">▶</button>
+        <div class="avatar-wrap">
+          <img class="avatar" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=600&q=80" alt="Косметолог-эстетист" />
+        </div>
+        <div class="rating-row">
+          <div class="stars" aria-label="Рейтинг 4.9 из 5">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="reviews">8 отзывов</div>
+        </div>
+        <div class="title">Темиржанова Алина Асланбиевна</div>
+        <div class="subtitle">Косметолог-эстетист</div>
+
+        <div class="experience">
+          <div class="exp-text">Стаж 7 лет</div>
+          <div class="verified">Документы проверены</div>
+        </div>
+      </section>
+
+      <section class="clinic">
+        <div class="clinic-title">Косметология «Эстетист»</div>
+        <div class="address">
+          <span class="icon">📍</span>
+          <div>
+            <div>г. Нальчик, ул. Байсултанова, 35г</div>
+            <button class="linkish" id="openMap">Маршрут на карте</button>
+          </div>
+        </div>
+        <div class="metro-list" id="metroList"></div>
+        <a class="phone" href="tel:+79387020936">+7 938 702-09-36</a>
+        <div class="age">от 18 лет</div>
+      </section>
+
+      <section class="services">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Спектр услуг</div>
+            <div class="section-subtitle">Выберите направление и время</div>
+          </div>
+          <select id="serviceSelect" class="select"></select>
+        </div>
+        <div class="service-cards" id="serviceCards"></div>
+      </section>
+
+      <section class="schedule">
+        <div class="section-header">
+          <div class="section-title">Свободные даты</div>
+          <div class="section-subtitle" id="selectedServiceHint"></div>
+        </div>
+        <div class="dates" id="dateList"></div>
+        <div class="times" id="timeList"></div>
+      </section>
+
+      <section class="booking">
+        <div class="section-header">
+          <div class="section-title">Запись на приём</div>
+          <div class="section-subtitle">Оставьте контакты — подтвердим за 2 мин</div>
+        </div>
+        <form id="bookingForm" class="form">
+          <label class="field">
+            <span>Ваше имя</span>
+            <input type="text" name="name" placeholder="Например, Анна" required />
+          </label>
+          <label class="field">
+            <span>Телефон</span>
+            <input type="tel" name="phone" placeholder="+7 ___ ___-__-__" required />
+          </label>
+          <label class="field">
+            <span>E-mail (для подтверждения)</span>
+            <input type="email" name="email" placeholder="name@mail.ru" />
+          </label>
+          <label class="field">
+            <span>Комментарий</span>
+            <textarea name="comment" rows="2" placeholder="Уточнения или пожелания"></textarea>
+          </label>
+          <button class="primary" type="submit">Записаться</button>
+          <div class="policy">Нажимая «Записаться», вы соглашаетесь с обработкой персональных данных</div>
+        </form>
+      </section>
+    </main>
+
+    <div class="modal hidden" id="modal">
+      <div class="modal-content">
+        <button class="close" id="closeModal">×</button>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

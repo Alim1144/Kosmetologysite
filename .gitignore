@@ -1,0 +1,7 @@
+node_modules/
+bookings.json
+.DS_Store
+*.log
+.env
+.env.local
+
