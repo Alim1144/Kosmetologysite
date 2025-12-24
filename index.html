@@ -77,6 +77,38 @@
         <div class="times" id="timeList"></div>
       </section>
 
+      <section class="reviews-section">
+        <div class="section-header">
+          <div class="section-title">Отзывы</div>
+          <div class="section-subtitle">Поделитесь своим опытом</div>
+        </div>
+        <form id="reviewForm" class="form">
+          <label class="field">
+            <span>Ваше имя</span>
+            <input type="text" name="name" placeholder="Например, Анна" required />
+          </label>
+          <label class="field">
+            <span>Оценка</span>
+            <div class="rating-input">
+              <button type="button" class="star-btn" data-rating="1">★</button>
+              <button type="button" class="star-btn" data-rating="2">★</button>
+              <button type="button" class="star-btn" data-rating="3">★</button>
+              <button type="button" class="star-btn" data-rating="4">★</button>
+              <button type="button" class="star-btn" data-rating="5">★</button>
+            </div>
+            <input type="hidden" name="rating" id="ratingValue" required />
+          </label>
+          <label class="field">
+            <span>Ваш отзыв</span>
+            <textarea name="text" rows="3" placeholder="Расскажите о вашем опыте..." required></textarea>
+          </label>
+          <button class="primary" type="submit">Оставить отзыв</button>
+        </form>
+        <div class="reviews-list" id="reviewsList">
+          <div class="loading">Загрузка отзывов...</div>
+        </div>
+      </section>
+
       <section class="booking">
         <div class="section-header">
           <div class="section-title">Запись на приём</div>

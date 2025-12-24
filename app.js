@@ -108,6 +108,9 @@ const els = {
   dateList: document.getElementById('dateList'),
   timeList: document.getElementById('timeList'),
   bookingForm: document.getElementById('bookingForm'),
+  reviewForm: document.getElementById('reviewForm'),
+  reviewsList: document.getElementById('reviewsList'),
+  ratingValue: document.getElementById('ratingValue'),
   modal: document.getElementById('modal'),
   modalBody: document.getElementById('modalBody'),
   closeModal: document.getElementById('closeModal'),
@@ -125,6 +128,7 @@ function init() {
   renderServices();
   renderSchedule();
   bindGlobalEvents();
+  loadReviews();
 }
 
 function renderStatusTime() {
@@ -209,6 +213,18 @@ function bindGlobalEvents() {
 
   els.openMap.addEventListener('click', () => {
     window.open('https://yandex.ru/maps/?text=Нальчик, Байсултанова 35г', '_blank');
+  });
+
+  // Обработка формы отзывов
+  els.reviewForm.addEventListener('submit', handleReview);
+
+  // Обработка звёзд рейтинга
+  const starButtons = document.querySelectorAll('.star-btn');
+  starButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const rating = parseInt(btn.dataset.rating);
+      setRating(rating);
+    });
   });
 }
 
@@ -356,4 +372,111 @@ function updateServiceHint() {
 
 // Функция localStorage больше не используется, но можно оставить при желании как запасной вариант
 
+// ========== ФУНКЦИИ ДЛЯ ОТЗЫВОВ ==========
+
+function setRating(rating) {
+  els.ratingValue.value = rating;
+  const starButtons = document.querySelectorAll('.star-btn');
+  starButtons.forEach((btn, index) => {
+    if (index < rating) {
+      btn.classList.add('active');
+      btn.style.color = '#f59e0b';
+    } else {
+      btn.classList.remove('active');
+      btn.style.color = '#d1d5db';
+    }
+  });
+}
+
+function handleReview(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const name = formData.get('name')?.trim();
+  const rating = parseInt(els.ratingValue.value);
+  const text = formData.get('text')?.trim();
+
+  if (!name || !rating || !text) {
+    showModal('<h3>Проверьте данные</h3><p>Заполните все поля: имя, оценка и текст отзыва.</p>');
+    return;
+  }
+
+  if (rating < 1 || rating > 5) {
+    showModal('<h3>Ошибка</h3><p>Выберите оценку от 1 до 5 звёзд.</p>');
+    return;
+  }
+
+  const review = {
+    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    name,
+    rating,
+    text,
+    createdAt: new Date().toISOString(),
+  };
+
+  fetch('/api/reviews', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(review),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg = data.message || 'Ошибка при отправке отзыва. Попробуйте ещё раз.';
+        throw new Error(msg);
+      }
+      return res.json();
+    })
+    .then(() => {
+      showModal('<h3>Спасибо!</h3><p>Ваш отзыв успешно добавлен и будет виден всем посетителям.</p>');
+      e.target.reset();
+      setRating(0);
+      loadReviews();
+    })
+    .catch((err) => {
+      console.error(err);
+      showModal(`<h3>Что-то пошло не так</h3><p>${err.message}</p>`);
+    });
+}
+
+function loadReviews() {
+  els.reviewsList.innerHTML = '<div class="loading">Загрузка отзывов...</div>';
+
+  fetch('/api/reviews')
+    .then((res) => res.json())
+    .then((reviews) => {
+      if (reviews.length === 0) {
+        els.reviewsList.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
+        return;
+      }
+
+      els.reviewsList.innerHTML = reviews.map((review) => reviewTemplate(review)).join('');
+    })
+    .catch((err) => {
+      console.error(err);
+      els.reviewsList.innerHTML = '<div class="error">Не удалось загрузить отзывы. Попробуйте обновить страницу.</div>';
+    });
+}
+
+function reviewTemplate(review) {
+  const date = new Date(review.createdAt);
+  const dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+  return `
+    <article class="review-card">
+      <div class="review-header">
+        <div class="review-author">${escapeHtml(review.name)}</div>
+        <div class="review-date">${dateStr}</div>
+      </div>
+      <div class="review-rating">${stars}</div>
+      <div class="review-text">${escapeHtml(review.text)}</div>
+    </article>
+  `;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 

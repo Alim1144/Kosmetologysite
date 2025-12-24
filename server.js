@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const BOOKINGS_FILE = path.join(__dirname, 'bookings.json');
+const REVIEWS_FILE = path.join(__dirname, 'reviews.json');
 
 // Настройки Telegram (нужно задать в переменных окружения)
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -55,6 +56,51 @@ app.get('/api/bookings', (req, res) => {
   fs.readFile(BOOKINGS_FILE, 'utf8', (err, data) => {
     if (err || !data) return res.json([]);
     res.json(safeParse(data));
+  });
+});
+
+// Создание отзыва
+app.post('/api/reviews', (req, res) => {
+  const review = req.body;
+
+  if (!review || !review.name || !review.rating || !review.text) {
+    return res.status(400).json({ message: 'Не хватает обязательных полей (имя, рейтинг, текст)' });
+  }
+
+  if (review.rating < 1 || review.rating > 5) {
+    return res.status(400).json({ message: 'Рейтинг должен быть от 1 до 5' });
+  }
+
+  const record = {
+    ...review,
+    id: review.id || String(Date.now()),
+    createdAt: review.createdAt || new Date().toISOString(),
+  };
+
+  fs.readFile(REVIEWS_FILE, 'utf8', (err, data) => {
+    const list = !err && data ? safeParse(data) : [];
+    list.push(record);
+
+    fs.writeFile(REVIEWS_FILE, JSON.stringify(list, null, 2), 'utf8', (writeErr) => {
+      if (writeErr) {
+        console.error('Ошибка записи файла отзывов:', writeErr);
+        return res.status(500).json({ message: 'Не удалось сохранить отзыв' });
+      }
+
+      console.log('Новый отзыв:', record);
+      res.status(201).json({ message: 'Отзыв сохранён', review: record });
+    });
+  });
+});
+
+// Просмотр всех отзывов
+app.get('/api/reviews', (req, res) => {
+  fs.readFile(REVIEWS_FILE, 'utf8', (err, data) => {
+    if (err || !data) return res.json([]);
+    const reviews = safeParse(data);
+    // Сортируем по дате создания (новые первыми)
+    reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(reviews);
   });
 });
 
