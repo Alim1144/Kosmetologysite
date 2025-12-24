@@ -16,9 +16,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 app.use(cors());
 app.use(express.json());
 
-// Отдаём статику (index.html, css, js)
-app.use(express.static(__dirname));
-
+// API маршруты должны быть до статики
 // Создание записи
 app.post('/api/bookings', (req, res) => {
   const booking = req.body;
@@ -113,6 +111,14 @@ function sendTelegramNotification(booking) {
   req.write(postData);
   req.end();
 }
+
+// Отдаём статику (CSS, JS) после API маршрутов, но без автоматического index.html
+app.use(express.static(__dirname, { index: false }));
+
+// Явно отдаём index.html для корневого пути
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
