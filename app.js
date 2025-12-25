@@ -73,7 +73,7 @@ const services = [
     desc: 'Лёгкое увеличение и увлажнение губ.',
     duration: 45,
     tag: 'Губы',
-    price: 5000,
+    price: 5500,
   },
   {
     id: 'lips-stylage-1',
