@@ -129,6 +129,7 @@ function init() {
   renderSchedule();
   bindGlobalEvents();
   loadReviews();
+  setRating(0); // Инициализация звёзд рейтинга
 }
 
 function renderStatusTime() {
@@ -375,10 +376,11 @@ function updateServiceHint() {
 // ========== ФУНКЦИИ ДЛЯ ОТЗЫВОВ ==========
 
 function setRating(rating) {
-  els.ratingValue.value = rating;
+  els.ratingValue.value = rating || '';
   const starButtons = document.querySelectorAll('.star-btn');
-  starButtons.forEach((btn, index) => {
-    if (index < rating) {
+  starButtons.forEach((btn) => {
+    const btnRating = parseInt(btn.dataset.rating);
+    if (rating && btnRating <= rating) {
       btn.classList.add('active');
       btn.style.color = '#f59e0b';
     } else {
@@ -395,8 +397,13 @@ function handleReview(e) {
   const rating = parseInt(els.ratingValue.value);
   const text = formData.get('text')?.trim();
 
-  if (!name || !rating || !text) {
-    showModal('<h3>Проверьте данные</h3><p>Заполните все поля: имя, оценка и текст отзыва.</p>');
+  if (!name || !text) {
+    showModal('<h3>Проверьте данные</h3><p>Заполните все поля: имя и текст отзыва.</p>');
+    return;
+  }
+
+  if (!rating || rating === 0 || isNaN(rating)) {
+    showModal('<h3>Выберите оценку</h3><p>Пожалуйста, выберите рейтинг от 1 до 5 звёзд.</p>');
     return;
   }
 
