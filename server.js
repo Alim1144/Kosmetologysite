@@ -77,26 +77,30 @@ app.post('/api/reviews', (req, res) => {
     createdAt: review.createdAt || new Date().toISOString(),
   };
 
+  // Гарантируем, что файл существует
   fs.readFile(REVIEWS_FILE, 'utf8', (err, data) => {
     const list = !err && data ? safeParse(data) : [];
     list.push(record);
 
-    fs.writeFile(REVIEWS_FILE, JSON.stringify(list, null, 2), 'utf8', (writeErr) => {
-      if (writeErr) {
-        console.error('Ошибка записи файла отзывов:', writeErr);
-        return res.status(500).json({ message: 'Не удалось сохранить отзыв' });
-      }
-
-      console.log('Новый отзыв:', record);
+    // Используем writeFileSync для гарантированной записи
+    try {
+      fs.writeFileSync(REVIEWS_FILE, JSON.stringify(list, null, 2), 'utf8');
+      console.log('Новый отзыв сохранён:', record);
       res.status(201).json({ message: 'Отзыв сохранён', review: record });
-    });
+    } catch (writeErr) {
+      console.error('Ошибка записи файла отзывов:', writeErr);
+      return res.status(500).json({ message: 'Не удалось сохранить отзыв' });
+    }
   });
 });
 
 // Просмотр всех отзывов
 app.get('/api/reviews', (req, res) => {
   fs.readFile(REVIEWS_FILE, 'utf8', (err, data) => {
-    if (err || !data) return res.json([]);
+    if (err || !data) {
+      // Если файла нет, возвращаем пустой массив
+      return res.json([]);
+    }
     const reviews = safeParse(data);
     // Сортируем по дате создания (новые первыми)
     reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
